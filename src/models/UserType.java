@@ -3,5 +3,8 @@ package models;
 public enum UserType {
     STUDENT,
     TEACHER,
-    MANAGER
+    MANAGER,
+    ADMIN,
+    RESEARCHER,
+    LIBRARIAN
 }
