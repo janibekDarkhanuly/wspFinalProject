@@ -6,7 +6,8 @@ import java.util.Vector;
 
 import db.dbContext;
 
-public class UserController {
+public class UserConroller {
+    private static final long serialVersionUID = 1L;
 
     public static boolean createUser(String username, String password, UserType type) {
         switch(type) {
@@ -57,6 +58,70 @@ public class UserController {
                 return null;
         }
     }
+    public static boolean deleteUser(UserType type, String username) {
+        switch (type) {
+            case STUDENT:
+                Vector<Student> students = (Vector<Student>) getUsers(UserType.STUDENT);
+                for (Student s : students) {
+                    if (s.getUsername().equals(username)) {
+                        students.remove(s);
+                        return dbContext.saveStudents();
+                    }
+                }
+                break;
+            case MANAGER:
+                Vector<Manager> managers = (Vector<Manager>) getUsers(UserType.MANAGER);
+                for (Manager m : managers) {
+                    if (m.getUsername().equals(username)) {
+                        managers.remove(m);
+                        return dbContext.saveManagers();
+                    }
+                }
+                break;
+            case LIBRARIAN:
+                Vector<Librarian> librarians = (Vector<Librarian>) getUsers(UserType.LIBRARIAN);
+                for (Librarian l : librarians) {
+                    if (l.getUsername().equals(username)) {
+                        librarians.remove(l);
+                        return dbContext.saveLibrarian();
+                    }
+                }
+                break;
+            case RESEARCHER:
+                Vector<Researcher> researchers = (Vector<Researcher>) getUsers(UserType.RESEARCHER);
+                for (Researcher r : researchers) {
+                    if (r.getUsername().equals(username)) {
+                        researchers.remove(r);
+                        return dbContext.saveResearcher();
+                    }
+                }
+                break;
+            case ADMIN:
+                Vector<Admin> admins = (Vector<Admin>) getUsers(UserType.ADMIN);
+                for (Admin a : admins) {
+                    if (a.getUsername().equals(username)) {
+                        admins.remove(a);
+                        return dbContext.saveAdmin();
+                    }
+                }
+                break;
+            case TEACHER:
+                Vector<Teacher> teachers = dbContext.getTeachers();
+                for (Teacher t : teachers) {
+                    if (t.getUsername().equals(username)) {
+                        teachers.remove(t);
+                        return dbContext.saveTeachers();
+                    }
+                }
+                break;
+        }
+        return false;
+    }
+
+//    public static boolean deleteAllUsers(UserType type) {
+//
+//    }
+
 
     public static boolean authorize(String fileName, String username, String password) {
         if(fileName.equals("teacher.txt")) {
@@ -112,6 +177,8 @@ public class UserController {
             }
         }
 
+
+
         return false;
     }
-}
+    }

@@ -3,15 +3,14 @@ package views;
 import java.util.Scanner;
 import java.util.Vector;
 
-import Controller.UserController;
-import localization.Localization;
+import Controller.UserConroller;
 import models.UserType;
 import models.User;
-import models.Teacher;
 
 import static localization.Localization.ln;
 
 public class BaseView {
+    ManagerView managerView = new ManagerView();
 
     private static Scanner in = new Scanner(System.in);
 
@@ -28,8 +27,8 @@ public class BaseView {
 
             if (option == 1) {
                 ln.setLanguage("en");
-                adminMenu();
                 validInput = true;
+                ManagerView.ManagerPanel();
             } else if (option == 2) {
                 ln.setLanguage("kz");
                 validInput = true;
@@ -38,6 +37,9 @@ public class BaseView {
                 validInput = true;
             } else {
                 System.out.println("Invalid choice! // Оңдай таңдау жоқ! // Некорректный выбор!");
+            }
+            if(validInput){
+                return;
             }
         }
 
@@ -81,7 +83,7 @@ public class BaseView {
         System.out.println("Password:");
         String password = in.nextLine();
 
-        boolean res = UserController.authorize(fileName, username, password);
+        boolean res = UserConroller.authorize(fileName, username, password);
 
 
         if (res && fileName.equals("admin.txt")) {
@@ -102,9 +104,13 @@ public class BaseView {
         } else if (option == 2) {
             showUsers();
         } else if (option == 3) {
-            System.out.println("Bye Bye!");
+            deleteUser();
+        }
+        else if(option == 4){
+            System.out.println(ln.getMessage("Goodbye"));
         }
     }
+
 
     public static void showUsers() {
         System.out.println(ln.getMessage("adminMenu_chooseTypeOfUserstoShow"));
@@ -113,45 +119,92 @@ public class BaseView {
         switch (option) {
             case 6:
                 u = UserType.RESEARCHER;
+                printUserInfo(u);
+                break;
             case 5:
                 u = UserType.LIBRARIAN;
+                printUserInfo(u);
+                break;
             case 4:
                 u = UserType.ADMIN;
+                printUserInfo(u);
+                break;
             case 3:
                 u = UserType.STUDENT;
+                printUserInfo(u);
+                break;
             case 2:
                 u = UserType.MANAGER;
+                printUserInfo(u);
+                break;
             case 1:
                 u = UserType.TEACHER;
+                printUserInfo(u);
+                break;
         }
         if(u == null){
             System.out.println(ln.getMessage("adminMenu_chooseTypeError"));
-            showUsers();
         }
-        Object o = UserController.getUsers(u);
-
+    }
+    public static void printUserInfo(UserType u){
+        Object o = UserConroller.getUsers(u);
         if(o instanceof Vector){
-            Vector<User> users = (Vector<User>) o;
-            for(User x : users){
-                System.out.println(x.getUsername());
+            Vector v = (Vector)o;
+            if(v.isEmpty()){
+                System.out.println(ln.getMessage("Empty"));
+                return;
+            }
+            for(Object x : v){
+                if(x instanceof User){
+                    System.out.println("Username: " + ((User) x).getUsername() + " Password: " + ((User) x).getPassword());
+                }
+
             }
         }
+    }
+    public static void deleteUser(){
+       System.out.println(ln.getMessage("adminDeleteOption"));
+       int option = in.nextInt();
+       in.nextLine();
+
+       if(option == 1){
 
 
 
-        System.out.println(o);
+           System.out.println(ln.getMessage("EnterUsername"));
+           String username = in.nextLine();
+           if (username != null && !username.trim().isEmpty()) {
+               boolean res = UserConroller.deleteUser(UserType.TEACHER, username);
+               if (res) {
+                   System.out.println(ln.getMessage("Good"));
+               } else {
+                   System.out.println(ln.getMessage("Error"));
+               }
+
+           }
+
+       }
+       else if(option == 2){
+           System.out.println(ln.getMessage("EnterUsername"));
+           String username = in.nextLine();
+           if (username != null && !username.trim().isEmpty()) {
+               boolean res = UserConroller.deleteUser(UserType.MANAGER, username);
+               if (res) {
+                   System.out.println(ln.getMessage("Good"));
+               } else {
+                   System.out.println(ln.getMessage("Error"));
+               }
+
+           }
+
+       }
+
+
     }
 
     public static void createUser() {
 
-        System.out.println("What role do you want to create?");
-        System.out.println("1. Teacher;");
-        System.out.println("2. Student;");
-        System.out.println("3. Manager;");
-        System.out.println("4. Admin;");
-        System.out.println("5. Researcher");
-        System.out.println("6. Librarian;");
-
+        System.out.println(ln.getMessage("adminCreateOption"));
         int option = in.nextInt();
 
         in.nextLine();
@@ -159,13 +212,13 @@ public class BaseView {
         if (option == 1) {
             System.out.println("Creating a new teacher...");
 
-            System.out.println("Enter a username:");
+            System.out.println(ln.getMessage("EnterUsername"));
             String username = in.nextLine();
-            System.out.println("Enter a password:");
+            System.out.println(ln.getMessage("EnterPassword"));
             String password = in.nextLine();
 
             // controller
-            boolean res = UserController.createUser(username, password, UserType.TEACHER);
+            boolean res = UserConroller.createUser(username, password, UserType.TEACHER);
 
             if (res) {
                 System.out.println(username + " is created!");
@@ -183,7 +236,7 @@ public class BaseView {
             String password = in.nextLine();
 
             // controller
-            boolean res = UserController.createUser(username, password, UserType.MANAGER);
+            boolean res = UserConroller.createUser(username, password, UserType.MANAGER);
 
             if (res) {
                 System.out.println(username + " is created!");
@@ -201,7 +254,7 @@ public class BaseView {
             String password = in.nextLine();
 
             // controller
-            boolean res = UserController.createUser(username, password, UserType.STUDENT);
+            boolean res = UserConroller.createUser(username, password, UserType.STUDENT);
 
             if (res) {
                 System.out.println(username + " is created!");
@@ -218,7 +271,7 @@ public class BaseView {
                 String username = in.nextLine();
                 System.out.println("Enter a password:");
                 String password = in.nextLine();
-                boolean res = UserController.createUser(username, password, UserType.ADMIN);
+                boolean res = UserConroller.createUser(username, password, UserType.ADMIN);
 
                 if (res) {
                     System.out.println(username + " is created!");
@@ -235,7 +288,7 @@ public class BaseView {
             String username = in.nextLine();
             System.out.println("Enter a password:");
             String password = in.nextLine();
-            boolean res = UserController.createUser(username, password, UserType.RESEARCHER);
+            boolean res = UserConroller.createUser(username, password, UserType.RESEARCHER);
 
             if (res) {
                 System.out.println(username + " is created!");
@@ -252,7 +305,7 @@ public class BaseView {
             String username = in.nextLine();
             System.out.println("Enter a password:");
             String password = in.nextLine();
-            boolean res = UserController.createUser(username, password, UserType.LIBRARIAN);
+            boolean res = UserConroller.createUser(username, password, UserType.LIBRARIAN);
             if (res) {
                 System.out.println(username + " is created!");
             } else {

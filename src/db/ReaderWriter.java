@@ -7,6 +7,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 public class ReaderWriter {
+    private static final long serialVersionUID = 1L;
+
 
     public static boolean serialize(Object o, String filePath) {
         try {

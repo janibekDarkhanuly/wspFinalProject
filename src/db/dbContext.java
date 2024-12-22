@@ -5,6 +5,7 @@ import java.util.Vector;
 import models.*;
 
 public class dbContext {
+    private static final long serialVersionUID = 1L;
 
     private static String fullPath = "C:\\Users\\user\\Desktop\\wspFInalProject\\WSP\\src\\data\\";
     private static dbContext db = new dbContext();
@@ -15,6 +16,7 @@ public class dbContext {
     public static Vector<Manager> manager = new Vector<Manager>();
     public static Vector<Researcher> researcher = new Vector<Researcher>();
     public static Vector<Librarian> librarian = new Vector<Librarian>();
+    public static Vector<Course> courses = new Vector<Course>();
 
 
 
@@ -27,6 +29,15 @@ public class dbContext {
         this.manager = getManagers();
         this.researcher = getResearchers();
         this.librarian = getLibrarians();
+        this.courses = getCourse();
+    }
+    public static Vector<Course> getCourse() {
+        Object o = ReaderWriter.deserialize(fullPath + "coursesInfo.txt");
+
+        if (o instanceof Vector) {
+            return (Vector<Course>) o;
+        }
+        return null;
     }
 
 
@@ -98,6 +109,9 @@ public class dbContext {
     }
     public static boolean saveResearcher(){
         return ReaderWriter.serialize(researcher, fullPath + "researcher.txt");
+    }
+    public static boolean saveCourseInfo(){
+        return ReaderWriter.serialize(courses, fullPath + "coursesInfo.txt");
     }
 
 
